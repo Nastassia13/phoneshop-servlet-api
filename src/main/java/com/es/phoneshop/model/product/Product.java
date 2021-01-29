@@ -2,14 +2,19 @@ package com.es.phoneshop.model.product;
 
 import java.math.BigDecimal;
 import java.util.Currency;
+import java.util.Objects;
 
 public class Product {
     private Long id;
     private String code;
     private String description;
-    /** null means there is no price because the product is outdated or new */
+    /**
+     * null means there is no price because the product is outdated or new
+     */
     private BigDecimal price;
-    /** can be null if the price is null */
+    /**
+     * can be null if the price is null
+     */
     private Currency currency;
     private int stock;
     private String imageUrl;
@@ -17,8 +22,19 @@ public class Product {
     public Product() {
     }
 
+    public Product(String code, String description, BigDecimal price, Currency currency, int stock, String imageUrl) {
+        this.code = code;
+        this.description = description;
+        this.price = price;
+        this.currency = currency;
+        this.stock = stock;
+        this.imageUrl = imageUrl;
+    }
+
     public Product(Long id, String code, String description, BigDecimal price, Currency currency, int stock, String imageUrl) {
-        this.id = id;
+        if (id > 0) {
+            this.id = id;
+        }
         this.code = code;
         this.description = description;
         this.price = price;
@@ -81,5 +97,41 @@ public class Product {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Product product = (Product) o;
+        return id.equals(product.id)
+                && code.equals(product.code)
+                && description.equals(product.description)
+                && price.equals(product.price)
+                && currency.equals(product.currency)
+                && stock == product.stock
+                && imageUrl.equals(product.imageUrl);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, code, description, price, currency, stock, imageUrl);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("Product: ");
+        sb.append("id = ").append(id);
+        sb.append(", code = ").append(code);
+        sb.append(", description = ").append(description);
+        sb.append(", price = ").append(price);
+        sb.append(", currency = ").append(currency);
+        sb.append(", stock = ").append(stock);
+        sb.append(", imageUrl = ").append(imageUrl);
+        return sb.toString();
     }
 }
