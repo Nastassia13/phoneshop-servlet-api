@@ -32,9 +32,7 @@ public class Product {
     }
 
     public Product(Long id, String code, String description, BigDecimal price, Currency currency, int stock, String imageUrl) {
-        if (id > 0) {
-            this.id = id;
-        }
+        this.id = id;
         this.code = code;
         this.description = description;
         this.price = price;
@@ -97,41 +95,5 @@ public class Product {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Product product = (Product) o;
-        return id.equals(product.id)
-                && code.equals(product.code)
-                && description.equals(product.description)
-                && price.equals(product.price)
-                && currency.equals(product.currency)
-                && stock == product.stock
-                && imageUrl.equals(product.imageUrl);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, code, description, price, currency, stock, imageUrl);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("Product: ");
-        sb.append("id = ").append(id);
-        sb.append(", code = ").append(code);
-        sb.append(", description = ").append(description);
-        sb.append(", price = ").append(price);
-        sb.append(", currency = ").append(currency);
-        sb.append(", stock = ").append(stock);
-        sb.append(", imageUrl = ").append(imageUrl);
-        return sb.toString();
     }
 }
