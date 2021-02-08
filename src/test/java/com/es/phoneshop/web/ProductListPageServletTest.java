@@ -1,8 +1,11 @@
 package com.es.phoneshop.web;
 
+import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.model.product.Product;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -11,8 +14,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -24,12 +29,21 @@ public class ProductListPageServletTest {
     private HttpServletResponse response;
     @Mock
     private RequestDispatcher requestDispatcher;
+    @Mock
+    private ArrayListProductDao productDao;
+    @Mock
+    private List<Product> products;
 
+    @InjectMocks
     private ProductListPageServlet servlet = new ProductListPageServlet();
 
+    public ProductListPageServletTest() {
+    }
+
     @Before
-    public void setup(){
+    public void setup() {
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
+        when(productDao.findProducts()).thenReturn(products);
     }
 
     @Test
@@ -37,5 +51,6 @@ public class ProductListPageServletTest {
         servlet.doGet(request, response);
 
         verify(requestDispatcher).forward(request, response);
+        verify(request).setAttribute(eq("products"), eq(products));
     }
 }
