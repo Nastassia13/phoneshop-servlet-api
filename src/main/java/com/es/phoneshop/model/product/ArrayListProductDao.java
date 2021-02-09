@@ -66,10 +66,10 @@ public class ArrayListProductDao implements ProductDao {
 
     @Override
     public List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder) {
-        Map<Product, Double> rating = new HashMap<>();
-        Comparator<Map.Entry<Product, Double>> comparator = defineComparator(query, sortField, sortOrder);
-        products.forEach(product -> calculateRating(product, query, rating));
         synchronized (lock) {
+            Map<Product, Double> rating = new HashMap<>();
+            Comparator<Map.Entry<Product, Double>> comparator = defineComparator(query, sortField, sortOrder);
+            products.forEach(product -> calculateRating(product, query, rating));
             return rating.entrySet().stream()
                     .filter(entry -> entry.getValue() != 0)
                     .filter(entry -> entry.getKey().getPrice() != null)
