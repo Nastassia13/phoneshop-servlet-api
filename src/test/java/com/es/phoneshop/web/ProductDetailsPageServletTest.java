@@ -5,6 +5,7 @@ import com.es.phoneshop.model.product.Product;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -48,16 +50,25 @@ public class ProductDetailsPageServletTest {
         productDao = ArrayListProductDao.getInstance();
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
         when(product.getId()).thenReturn(productId);
+        when(request.getPathInfo()).thenReturn("/" + productId);
         productDao.save(product);
         servlet.init(config);
     }
 
     @Test
     public void testDoGet() throws ServletException, IOException {
-        when(request.getPathInfo()).thenReturn("/" + productId);
         servlet.doGet(request, response);
 
         verify(requestDispatcher).forward(request, response);
         verify(request).setAttribute(eq("product"), eq(product));
+    }
+
+    @Test
+    public void testArgumentsProduct() throws ServletException, IOException {
+        ArgumentCaptor<Product> argumentCaptor = ArgumentCaptor.forClass(Product.class);
+        servlet.doGet(request, response);
+
+        verify(request).setAttribute(eq("product"), argumentCaptor.capture());
+        assertEquals(product, argumentCaptor.getValue());
     }
 }

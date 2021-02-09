@@ -1,17 +1,10 @@
-<%@ page import="com.es.phoneshop.model.product.PriceHistory" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Collections" %>
-<%@ page import="java.util.ArrayList" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <jsp:useBean id="product" type="com.es.phoneshop.model.product.Product" scope="request"/>
-<%! List<PriceHistory> reverseHistory;%>
-<% reverseHistory = new ArrayList(product.getHistory());
-   Collections.reverse(reverseHistory);
-%>
+<jsp:useBean id="history" type="java.util.ArrayList" scope="request"/>
 <tags:master pageTitle="Price history">
   <h1>Price history</h1>
   <h2>${product.description}</h2>
@@ -22,7 +15,7 @@
         <td><b>Price</b></td>
       </tr>
     </thead>
-    <c:forEach var="hist" items="<%= reverseHistory%>">
+    <c:forEach var="hist" items="${history}">
       <tr>
         <td>
           <fmt:formatDate value="${hist.startDate}" type="date"/>

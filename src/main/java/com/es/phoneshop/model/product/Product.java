@@ -17,33 +17,28 @@ public class Product {
     private Currency currency;
     private int stock;
     private String imageUrl;
-    private List<PriceHistory> history;
+    private List<PriceHistory> history = new ArrayList<>();
 
     public Product() {
-        history = new ArrayList<>();
     }
 
     public Product(String code, String description, BigDecimal price, Currency currency, int stock, String imageUrl) {
         this.code = code;
         this.description = description;
-        this.price = price;
         this.currency = currency;
         this.stock = stock;
         this.imageUrl = imageUrl;
-        history = new ArrayList<>();
-        history.add(new PriceHistory(new Date(), price));
+        appendPrice(price);
     }
 
     public Product(Long id, String code, String description, BigDecimal price, Currency currency, int stock, String imageUrl) {
         this.id = id;
         this.code = code;
         this.description = description;
-        this.price = price;
         this.currency = currency;
         this.stock = stock;
         this.imageUrl = imageUrl;
-        history = new ArrayList<>();
-        history.add(new PriceHistory(new Date(), price));
+        appendPrice(price);
     }
 
     public Long getId() {
@@ -76,7 +71,6 @@ public class Product {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
-        history.add(new PriceHistory(new Date(), price));
     }
 
     public Currency getCurrency() {
@@ -109,5 +103,10 @@ public class Product {
 
     public void setHistory(List<PriceHistory> history) {
         this.history = history;
+    }
+
+    public void appendPrice(BigDecimal price) {
+        this.price = price;
+        history.add(new PriceHistory(new Date(), price));
     }
 }

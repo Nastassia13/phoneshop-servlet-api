@@ -53,7 +53,7 @@ public class ArrayListProductDaoTest {
         fail("Expected ProductNotFoundException");
     }
 
-    @Test(expected = ProductNotFoundException.class)
+    @Test(expected = ArgumentIsNullException.class)
     public void testGetProductNull() throws ProductNotFoundException {
         Long id = null;
         assertEquals(product1, productDao.getProduct(id));
@@ -72,7 +72,7 @@ public class ArrayListProductDaoTest {
 
     @Test
     public void testFindProductsByQuery() {
-        List<Product> products = new ArrayList<>(Arrays.asList(product5, product4));
+        List<Product> products = new ArrayList<>(Arrays.asList(product4, product5));
         assertEquals(products, productDao.findProducts(query, null, null));
     }
 
@@ -148,7 +148,7 @@ public class ArrayListProductDaoTest {
         assertEquals(product, productDao.getProduct(id));
     }
 
-    @Test(expected = ProductNotFoundException.class)
+    @Test(expected = ArgumentIsNullException.class)
     public void testSaveProductNull() throws ProductNotFoundException {
         Product product = null;
         productDao.save(product);
@@ -162,7 +162,7 @@ public class ArrayListProductDaoTest {
         fail("Expected ProductNotFoundException");
     }
 
-    @Test(expected = ProductNotFoundException.class)
+    @Test(expected = ArgumentIsNullException.class)
     public void testDeleteProductNull() throws ProductNotFoundException {
         Long id = null;
         productDao.delete(id);
