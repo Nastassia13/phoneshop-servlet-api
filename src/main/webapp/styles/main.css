@@ -21,11 +21,26 @@ td {
   border : 1px solid gray;
   vertical-align: top;
 }
-.price {
+.price, .quantity {
   text-align: right;
 }
 img.product-tile {
   max-width: 64px;
+}
+.error {
+  color: red;
+}
+.success {
+  color: green;
+}
+div {
+  width: 130px;
+  height: 180px;
+  padding: 10px;
+  border: 1px solid gray;
+  display: inline-block;
+  text-align: center;
+  vertical-align: top;
 }
 
 /* Page specific styles */
