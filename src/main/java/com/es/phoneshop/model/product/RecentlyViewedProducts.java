@@ -9,6 +9,10 @@ public class RecentlyViewedProducts {
         this.productsList = new LinkedList<>();
     }
 
+    public RecentlyViewedProducts(LinkedList<Long> productsList) {
+        this.productsList = productsList;
+    }
+
     public LinkedList<Long> getProductsList() {
         return productsList;
     }
