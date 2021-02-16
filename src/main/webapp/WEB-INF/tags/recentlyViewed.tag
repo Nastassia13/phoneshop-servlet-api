@@ -12,7 +12,7 @@
     </p>
     <p>
       <a href="${pageContext.servletContext.contextPath}/products/${product.id}">
-        ${product.description}
+          ${product.description}
       </a>
     </p>
     <p>

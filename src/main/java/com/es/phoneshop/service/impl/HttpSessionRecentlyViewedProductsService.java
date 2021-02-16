@@ -2,15 +2,19 @@ package com.es.phoneshop.service.impl;
 
 import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.dao.impl.ArrayListProductDao;
+import com.es.phoneshop.exception.ArgumentIsNullException;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.RecentlyViewedProducts;
 import com.es.phoneshop.service.RecentlyViewedProductsService;
+import com.es.phoneshop.utils.RecentlyViewedProductsLoader;
+import com.es.phoneshop.utils.impl.HttpSessionRecentlyViewedProductsLoader;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.LinkedList;
+import java.util.List;
 
 public class HttpSessionRecentlyViewedProductsService implements RecentlyViewedProductsService {
     private static HttpSessionRecentlyViewedProductsService instance;
-    private static final String VIEWED_SESSION_ATTRIBUTE = HttpSessionRecentlyViewedProductsService.class.getName() + ".viewed";
+    private final int AMOUNT_VIEWED_PRODUCTS = 3;
     private ProductDao productDao;
 
     private HttpSessionRecentlyViewedProductsService() {
@@ -25,18 +29,20 @@ public class HttpSessionRecentlyViewedProductsService implements RecentlyViewedP
     }
 
     @Override
-    public synchronized void addToList(HttpServletRequest request, Long productId) {
-        RecentlyViewedProducts viewedProducts = (RecentlyViewedProducts) request.getSession().getAttribute(VIEWED_SESSION_ATTRIBUTE);
-        if (viewedProducts == null) {
-            viewedProducts = new RecentlyViewedProducts();
-            request.getSession().setAttribute(VIEWED_SESSION_ATTRIBUTE, viewedProducts);
+    public void addToList(RecentlyViewedProductsLoader loader, Long productId) {
+        if (productId == null) {
+            throw new ArgumentIsNullException();
         }
-        Product product = productDao.getProduct(productId);
-        viewedProducts.getProductsList().remove(product);
-        if (viewedProducts.getProductsList().size() == 3) {
-            viewedProducts.getProductsList().removeLast();
+        synchronized (HttpSessionRecentlyViewedProductsLoader.class) {
+            RecentlyViewedProducts products = loader.getViewedProducts();
+            products.getProductsList().remove(productId);
+            if (products.getProductsList().size() == AMOUNT_VIEWED_PRODUCTS) {
+                products.getProductsList().removeLast();
+            }
+            products.getProductsList().addFirst(productId);
+            List<Product> result = new LinkedList<>();
+            products.getProductsList().forEach(p -> result.add(productDao.getProduct(p)));
+            loader.saveToRequest(result);
         }
-        viewedProducts.getProductsList().addFirst(product);
-        request.getSession().setAttribute("viewedProducts", viewedProducts.getProductsList());
     }
 }

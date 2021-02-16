@@ -4,8 +4,8 @@ import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.exception.ArgumentIsNullException;
 import com.es.phoneshop.exception.ProductNotFoundException;
 import com.es.phoneshop.model.product.Product;
-import com.es.phoneshop.model.sortenum.SortField;
-import com.es.phoneshop.model.sortenum.SortOrder;
+import com.es.phoneshop.model.sort.SortField;
+import com.es.phoneshop.model.sort.SortOrder;
 
 import java.util.*;
 import java.util.stream.Collectors;

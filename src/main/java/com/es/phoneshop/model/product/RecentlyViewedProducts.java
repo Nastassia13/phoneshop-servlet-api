@@ -3,13 +3,13 @@ package com.es.phoneshop.model.product;
 import java.util.LinkedList;
 
 public class RecentlyViewedProducts {
-    LinkedList<Product> productsList;
+    LinkedList<Long> productsList;
 
     public RecentlyViewedProducts() {
         this.productsList = new LinkedList<>();
     }
 
-    public LinkedList<Product> getProductsList() {
+    public LinkedList<Long> getProductsList() {
         return productsList;
     }
 }

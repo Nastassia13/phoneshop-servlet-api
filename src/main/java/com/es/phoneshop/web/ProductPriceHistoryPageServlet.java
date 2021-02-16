@@ -32,6 +32,6 @@ public class ProductPriceHistoryPageServlet extends HttpServlet {
         List<PriceHistory> reverseHistory = new ArrayList<>(product.getHistory());
         Collections.reverse(reverseHistory);
         request.setAttribute("history", reverseHistory);
-        request.getRequestDispatcher("/WEB-INF/pages/history.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/pages/main/history.jsp").forward(request, response);
     }
 }
