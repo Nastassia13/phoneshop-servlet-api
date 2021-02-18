@@ -11,6 +11,9 @@ import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.service.CartService;
 import com.es.phoneshop.utils.CartLoader;
 
+import java.math.BigDecimal;
+import java.util.Optional;
+
 public class HttpSessionCartService implements CartService {
     private static HttpSessionCartService instance;
     private ProductDao productDao;
@@ -44,23 +47,76 @@ public class HttpSessionCartService implements CartService {
         }
         synchronized (obj) {
             Product product = productDao.getProduct(productId);
-            for (CartItem item : cart.getItems()) {
-                if (item.getProduct().getId().equals(productId)) {
-                    int resultQuantity = item.getQuantity() + quantity;
-                    int index = cart.getItems().indexOf(item);
-                    int quantityInCart = cart.getItems().get(index).getQuantity();
-                    boolean isZero = checkStock(product, quantity, quantityInCart);
-                    if (!isZero) {
-                        cart.getItems().get(index).setQuantity(resultQuantity);
-                    } else {
-                        cart.getItems().remove(index);
-                    }
-                    return;
+            Optional<CartItem> cartItem = findCartItem(cart, productId);
+            boolean isZero;
+            if (cartItem.isPresent()) {
+                CartItem item = cartItem.get();
+                int index = cart.getItems().indexOf(item);
+                int quantityInCart = cart.getItems().get(index).getQuantity();
+                isZero = checkStock(product, quantity, quantityInCart);
+                int resultQuantity = item.getQuantity() + quantity;
+                if (!isZero) {
+                    cart.getItems().get(index).setQuantity(resultQuantity);
+                } else {
+                    cart.getItems().remove(index);
+                }
+            } else {
+                isZero = checkStock(product, quantity, 0);
+                if (!isZero) {
+                    cart.getItems().add(new CartItem(product, quantity));
+                } else {
+                    throw new OutOfQuantityException();
                 }
             }
-            checkStock(product, quantity, 0);
-            cart.getItems().add(new CartItem(product, quantity));
+            recalculateCart(cart);
         }
+    }
+
+    @Override
+    public void update(Cart cart, Long productId, int quantity) throws OutOfStockException, OutOfQuantityException {
+        if (cart == null || productId == null) {
+            throw new ArgumentIsNullException();
+        }
+        synchronized (obj) {
+            Product product = productDao.getProduct(productId);
+            Optional<CartItem> cartItem = findCartItem(cart, productId);
+            if (cartItem.isPresent()) {
+                int index = cart.getItems().indexOf(cartItem.get());
+                boolean isZero = checkStock(product, quantity, 0);
+                if (!isZero) {
+                    cart.getItems().get(index).setQuantity(quantity);
+                } else {
+                    throw new OutOfQuantityException();
+                }
+            }
+            recalculateCart(cart);
+        }
+    }
+
+    @Override
+    public void delete(Cart cart, Long productId) {
+        if (cart == null || productId == null) {
+            throw new ArgumentIsNullException();
+        }
+        synchronized (obj) {
+            cart.getItems().removeIf(item -> productId.equals(item.getProduct().getId()));
+            recalculateCart(cart);
+        }
+    }
+
+    private void recalculateCart(Cart cart) {
+        cart.setTotalQuantity(cart.getItems().stream()
+                .mapToInt(CartItem::getQuantity)
+                .sum());
+        cart.setTotalCost(cart.getItems().stream()
+                .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+    }
+
+    private Optional<CartItem> findCartItem(Cart cart, Long productId) {
+        return cart.getItems().stream()
+                .filter(item -> productId.equals(item.getProduct().getId()))
+                .findAny();
     }
 
     private boolean checkStock(Product product, int quantity, int quantityInCart) throws OutOfStockException, OutOfQuantityException {
