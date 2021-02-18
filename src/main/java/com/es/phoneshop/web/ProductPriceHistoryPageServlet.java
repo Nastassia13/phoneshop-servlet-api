@@ -1,9 +1,9 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.dao.impl.ArrayListProductDao;
 import com.es.phoneshop.model.product.PriceHistory;
 import com.es.phoneshop.model.product.Product;
-import com.es.phoneshop.model.product.ProductDao;
+import com.es.phoneshop.dao.ProductDao;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -32,6 +32,6 @@ public class ProductPriceHistoryPageServlet extends HttpServlet {
         List<PriceHistory> reverseHistory = new ArrayList<>(product.getHistory());
         Collections.reverse(reverseHistory);
         request.setAttribute("history", reverseHistory);
-        request.getRequestDispatcher("/WEB-INF/pages/history.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/pages/main/history.jsp").forward(request, response);
     }
 }
