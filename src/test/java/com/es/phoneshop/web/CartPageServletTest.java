@@ -1,7 +1,6 @@
 package com.es.phoneshop.web;
 
 import com.es.phoneshop.dao.impl.ArrayListProductDao;
-import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.product.Product;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,6 +78,9 @@ public class CartPageServletTest {
     public void testDoPost() throws ServletException, IOException {
         servlet.doPost(request, response);
 
+        when(product1.getStock()).thenReturn(10);
+        when(product2.getStock()).thenReturn(15);
+        when(product3.getStock()).thenReturn(20);
         verify(response).sendRedirect(request.getContextPath() + "/cart?message=Cart updated successfully");
     }
 }

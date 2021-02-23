@@ -33,8 +33,6 @@ public class ProductListPageServletTest {
     @Mock
     private ArrayListProductDao productDao;
     @Mock
-    private HttpSessionCartService cartService;
-    @Mock
     private List<Product> products;
     @Mock
     private Product product1;

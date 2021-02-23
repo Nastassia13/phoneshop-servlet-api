@@ -7,8 +7,8 @@ import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.service.CartService;
 import com.es.phoneshop.service.impl.HttpSessionCartService;
 import com.es.phoneshop.utils.CartLoader;
-import com.es.phoneshop.utils.DataParser;
-import com.es.phoneshop.utils.ErrorHandler;
+import com.es.phoneshop.service.ParserService;
+import com.es.phoneshop.service.ErrorService;
 import com.es.phoneshop.utils.impl.HttpSessionCartLoader;
 
 import javax.servlet.ServletConfig;
@@ -23,11 +23,15 @@ import java.util.Map;
 
 public class CartPageServlet extends HttpServlet {
     private CartService cartService;
+    private ParserService parserService;
+    private ErrorService errorService;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         cartService = HttpSessionCartService.getInstance();
+        parserService = ParserService.getInstance();
+        errorService = ErrorService.getInstance();
     }
 
     @Override
@@ -40,16 +44,15 @@ public class CartPageServlet extends HttpServlet {
         String[] productIds = request.getParameterValues("productId");
         String[] quantities = request.getParameterValues("quantity");
         Map<Long, String> errors = new HashMap<>();
-        DataParser dataParser = new DataParser();
         CartLoader cartLoader = new HttpSessionCartLoader(request);
         Cart cart = cartService.getCart(cartLoader);
         for (int i = 0; i < productIds.length; i++) {
             Long productId = Long.valueOf(productIds[i]);
             try {
-                int quantity = dataParser.parseQuantity(quantities[i], request);
+                int quantity = parserService.parseQuantity(quantities[i], request);
                 cartService.update(cart, productId, quantity);
             } catch (ParseException | ParseToIntegerException | OutOfQuantityException | OutOfStockException e) {
-                ErrorHandler.handleErrors(errors, productId, e);
+                errorService.handleErrors(errors, productId, e);
             }
         }
         if (errors.isEmpty()) {

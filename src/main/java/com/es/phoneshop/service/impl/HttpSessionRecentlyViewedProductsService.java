@@ -42,7 +42,7 @@ public class HttpSessionRecentlyViewedProductsService implements RecentlyViewedP
             products.getProductsList().addFirst(productId);
             List<Product> result = new LinkedList<>();
             products.getProductsList().forEach(p -> result.add(productDao.getProduct(p)));
-            loader.saveToRequest(result);
+            loader.save(result);
         }
     }
 }

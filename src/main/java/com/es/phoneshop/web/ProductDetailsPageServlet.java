@@ -11,8 +11,8 @@ import com.es.phoneshop.service.RecentlyViewedProductsService;
 import com.es.phoneshop.service.impl.HttpSessionCartService;
 import com.es.phoneshop.service.impl.HttpSessionRecentlyViewedProductsService;
 import com.es.phoneshop.utils.CartLoader;
-import com.es.phoneshop.utils.DataParser;
-import com.es.phoneshop.utils.ErrorHandler;
+import com.es.phoneshop.service.ParserService;
+import com.es.phoneshop.service.ErrorService;
 import com.es.phoneshop.utils.RecentlyViewedProductsLoader;
 import com.es.phoneshop.utils.impl.HttpSessionCartLoader;
 import com.es.phoneshop.utils.impl.HttpSessionRecentlyViewedProductsLoader;
@@ -29,7 +29,8 @@ public class ProductDetailsPageServlet extends HttpServlet {
     private ProductDao productDao;
     private CartService cartService;
     private RecentlyViewedProductsService viewedService;
-    private DataParser dataParser;
+    private ParserService parserService;
+    private ErrorService errorService;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -37,13 +38,14 @@ public class ProductDetailsPageServlet extends HttpServlet {
         productDao = ArrayListProductDao.getInstance();
         cartService = HttpSessionCartService.getInstance();
         viewedService = HttpSessionRecentlyViewedProductsService.getInstance();
-        dataParser = new DataParser();
+        parserService = ParserService.getInstance();
+        errorService = ErrorService.getInstance();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         RecentlyViewedProductsLoader viewedProductsLoader = new HttpSessionRecentlyViewedProductsLoader(request);
-        Long productId = dataParser.parseProductId(request);
+        Long productId = parserService.parseProductId(request);
         request.setAttribute("product", productDao.getProduct(productId));
         request.getRequestDispatcher("/WEB-INF/pages/main/product.jsp").forward(request, response);
         viewedService.addToList(viewedProductsLoader, productId);
@@ -53,14 +55,13 @@ public class ProductDetailsPageServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         CartLoader cartLoader = new HttpSessionCartLoader(request);
         Cart cart = cartService.getCart(cartLoader);
-        Long productId = dataParser.parseProductId(request);
+        Long productId = parserService.parseProductId(request);
         String quantityString = request.getParameter("quantity");
         try {
-            int quantity = dataParser.parseQuantity(quantityString, request);
+            int quantity = parserService.parseQuantity(quantityString, request);
             cartService.add(cart, productId, quantity);
         } catch (OutOfStockException | OutOfQuantityException | ParseException | ParseToIntegerException e) {
-            String error = ErrorHandler.handleError(e);
-            request.setAttribute("error", error);
+            request.setAttribute("error", errorService.handleError(e));
             doGet(request, response);
             return;
         }

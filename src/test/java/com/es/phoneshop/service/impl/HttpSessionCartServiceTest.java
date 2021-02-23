@@ -193,12 +193,12 @@ public class HttpSessionCartServiceTest {
         assertEquals(quantity, cart.getItems().get(0).getQuantity());
     }
 
-    @Test(expected = OutOfQuantityException.class)
+    @Test
     public void testUpdateZero() throws OutOfQuantityException, OutOfStockException {
         Long productId = 1L;
         int quantity = 0;
         service.update(cart, productId, quantity);
-        assertEquals(quantity, cart.getItems().get(0).getQuantity());
+        assertFalse(cart.getItems().contains(item1));
     }
 
     @Test(expected = OutOfStockException.class)

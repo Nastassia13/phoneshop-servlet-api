@@ -1,4 +1,4 @@
-package com.es.phoneshop.utils;
+package com.es.phoneshop.service;
 
 import com.es.phoneshop.exception.ParseToIntegerException;
 
@@ -6,7 +6,19 @@ import javax.servlet.http.HttpServletRequest;
 import java.text.NumberFormat;
 import java.text.ParseException;
 
-public class DataParser {
+public class ParserService {
+    private static ParserService instance;
+
+    private ParserService() {
+    }
+
+    public static ParserService getInstance() {
+        if (instance == null) {
+            instance = new ParserService();
+        }
+        return instance;
+    }
+
     public Long parseProductId(HttpServletRequest request) {
         String productId = request.getPathInfo().substring(1);
         return Long.valueOf(productId);
