@@ -3,14 +3,17 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<jsp:useBean id="product" type="com.es.phoneshop.model.product.Product" scope="request"/>
+<jsp:useBean id="product" class="com.es.phoneshop.model.product.Product" scope="request"/>
+<jsp:useBean id="cart" class="com.es.phoneshop.model.cart.Cart" scope="request"/>
+<jsp:useBean id="error" class="java.lang.String" scope="request"/>
 <tags:master pageTitle="Product">
-  <p>
-    Cart:
-    <c:forEach var="item" items="${cart.getItems()}">
-      <p> &#8226; ${item}</p>
-    </c:forEach>
-  </p>
+  <p></p>
+  <a href="${pageContext.servletContext.contextPath}/cart">
+    <b>Cart</b>
+  </a>
+  <c:forEach var="item" items="${cart.items}">
+    <p> &#8226; ${item}</p>
+  </c:forEach>
   <c:if test="${not empty param.message and empty error}">
     <p class="success">
         ${param.message}

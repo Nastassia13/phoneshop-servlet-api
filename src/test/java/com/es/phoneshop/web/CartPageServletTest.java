@@ -1,8 +1,8 @@
 package com.es.phoneshop.web;
 
 import com.es.phoneshop.dao.impl.ArrayListProductDao;
+import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.product.Product;
-import com.es.phoneshop.service.impl.HttpSessionCartService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,19 +11,22 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.List;
+import java.util.Locale;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ProductListPageServletTest {
+public class CartPageServletTest {
+    @Mock
+    private ArrayListProductDao productDao;
     @Mock
     private HttpServletRequest request;
     @Mock
@@ -31,11 +34,7 @@ public class ProductListPageServletTest {
     @Mock
     private RequestDispatcher requestDispatcher;
     @Mock
-    private ArrayListProductDao productDao;
-    @Mock
-    private HttpSessionCartService cartService;
-    @Mock
-    private List<Product> products;
+    private HttpSession session;
     @Mock
     private Product product1;
     @Mock
@@ -44,22 +43,29 @@ public class ProductListPageServletTest {
     private Product product3;
     private String[] productId = new String[]{"1", "2", "3"};
     private String[] stringQuantity = new String[]{"5", "2", "3"};
+    private ServletConfig config;
 
     @InjectMocks
-    private ProductListPageServlet servlet = new ProductListPageServlet();
+    private CartPageServlet servlet = new CartPageServlet();
 
-    public ProductListPageServletTest() {
+    public CartPageServletTest() {
     }
 
     @Before
     public void setup() throws ServletException {
+        productDao = ArrayListProductDao.getInstance();
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
-        when(productDao.findProducts(null, null, null)).thenReturn(products);
+        when(request.getSession()).thenReturn(session);
+        when(product1.getId()).thenReturn(1L);
+        when(product2.getId()).thenReturn(2L);
+        when(product3.getId()).thenReturn(3L);
+        when(request.getLocale()).thenReturn(Locale.ENGLISH);
         when(request.getParameterValues("quantity")).thenReturn(stringQuantity);
         when(request.getParameterValues("productId")).thenReturn(productId);
         productDao.save(product1);
         productDao.save(product2);
         productDao.save(product3);
+        servlet.init(config);
     }
 
     @Test
@@ -67,13 +73,12 @@ public class ProductListPageServletTest {
         servlet.doGet(request, response);
 
         verify(requestDispatcher).forward(request, response);
-        verify(request).setAttribute(eq("products"), eq(products));
     }
 
     @Test
     public void testDoPost() throws ServletException, IOException {
         servlet.doPost(request, response);
 
-        verify(response).sendRedirect(request.getContextPath() + "/products?message=Added to cart successfully");
+        verify(response).sendRedirect(request.getContextPath() + "/cart?message=Cart updated successfully");
     }
 }

@@ -9,4 +9,8 @@ public interface CartService {
     Cart getCart(CartLoader cartLoader);
 
     void add(Cart cart, Long productId, int quantity) throws OutOfStockException, OutOfQuantityException;
+
+    void update(Cart cart, Long productId, int quantity) throws OutOfStockException, OutOfQuantityException;
+
+    void delete(Cart cart, Long productId);
 }

@@ -42,7 +42,7 @@ public class ProductPriceHistoryPageServletTest {
     @Mock
     private ArrayListProductDao productDao;
     private Long productId;
-    ServletConfig config;
+    private ServletConfig config;
 
     @InjectMocks
     private ProductPriceHistoryPageServlet servlet = new ProductPriceHistoryPageServlet();
@@ -70,7 +70,7 @@ public class ProductPriceHistoryPageServletTest {
 
         verify(requestDispatcher).forward(request, response);
         verify(request).setAttribute(eq("product"), eq(product));
-
+        verify(request).setAttribute(eq("history"), eq(priceHistory));
     }
 
     @Test
