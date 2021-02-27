@@ -8,8 +8,8 @@ public class ErrorService {
     private static ErrorService instance;
     private static final String PARSE_EXCEPTION = "java.text.ParseException";
     private static final String PARSE_TO_INT_EXCEPTION = "com.es.phoneshop.exception.ParseToIntegerException";
-    private static final String STOCK_EXCEPTION = "com.es.phoneshop.exception.OutOfQuantityException";
-    private static final String QUANTITY_EXCEPTION = "com.es.phoneshop.exception.OutOfStockException";
+    private static final String STOCK_EXCEPTION = "com.es.phoneshop.exception.OutOfStockException";
+    private static final String QUANTITY_EXCEPTION = "com.es.phoneshop.exception.OutOfQuantityException";
 
     private ErrorService() {
     }

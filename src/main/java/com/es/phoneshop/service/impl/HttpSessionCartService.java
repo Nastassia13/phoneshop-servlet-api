@@ -44,7 +44,7 @@ public class HttpSessionCartService implements CartService {
             throw new ArgumentIsNullException();
         }
         synchronized (cartLock) {
-            Product product = productDao.getProduct(productId);
+            Product product = productDao.getItem(productId);
             Optional<CartItem> cartItem = findCartItem(cart, productId);
             int quantityInCart = cartItem.map(CartItem::getQuantity).orElse(0);
             boolean isZero = checkStock(product, quantity, quantityInCart);
@@ -64,7 +64,7 @@ public class HttpSessionCartService implements CartService {
             throw new ArgumentIsNullException();
         }
         synchronized (cartLock) {
-            Product product = productDao.getProduct(productId);
+            Product product = productDao.getItem(productId);
             Optional<CartItem> cartItem = findCartItem(cart, productId);
             boolean isZero = checkStock(product, quantity, 0);
             cartItem.ifPresent(item -> changeCart(cart, item, isZero, quantity));
@@ -114,5 +114,11 @@ public class HttpSessionCartService implements CartService {
         } else {
             cart.getItems().remove(item);
         }
+    }
+
+    @Override
+    public void clearCart(Cart cart) {
+        cart.getItems().removeAll(cart.getItems());
+        recalculateCart(cart);
     }
 }

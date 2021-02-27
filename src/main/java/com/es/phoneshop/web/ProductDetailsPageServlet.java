@@ -7,12 +7,12 @@ import com.es.phoneshop.exception.OutOfStockException;
 import com.es.phoneshop.exception.ParseToIntegerException;
 import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.service.CartService;
+import com.es.phoneshop.service.ErrorService;
+import com.es.phoneshop.service.ParserService;
 import com.es.phoneshop.service.RecentlyViewedProductsService;
 import com.es.phoneshop.service.impl.HttpSessionCartService;
 import com.es.phoneshop.service.impl.HttpSessionRecentlyViewedProductsService;
 import com.es.phoneshop.utils.CartLoader;
-import com.es.phoneshop.service.ParserService;
-import com.es.phoneshop.service.ErrorService;
 import com.es.phoneshop.utils.RecentlyViewedProductsLoader;
 import com.es.phoneshop.utils.impl.HttpSessionCartLoader;
 import com.es.phoneshop.utils.impl.HttpSessionRecentlyViewedProductsLoader;
@@ -46,7 +46,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         RecentlyViewedProductsLoader viewedProductsLoader = new HttpSessionRecentlyViewedProductsLoader(request);
         Long productId = parserService.parseProductId(request);
-        request.setAttribute("product", productDao.getProduct(productId));
+        request.setAttribute("product", productDao.getItem(productId));
         request.getRequestDispatcher("/WEB-INF/pages/main/product.jsp").forward(request, response);
         viewedService.addToList(viewedProductsLoader, productId);
     }

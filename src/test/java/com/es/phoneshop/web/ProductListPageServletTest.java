@@ -2,6 +2,7 @@ package com.es.phoneshop.web;
 
 import com.es.phoneshop.dao.impl.ArrayListProductDao;
 import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.service.CartService;
 import com.es.phoneshop.service.impl.HttpSessionCartService;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +33,8 @@ public class ProductListPageServletTest {
     private RequestDispatcher requestDispatcher;
     @Mock
     private ArrayListProductDao productDao;
+    @Mock
+    private CartService cartService;
     @Mock
     private List<Product> products;
     @Mock

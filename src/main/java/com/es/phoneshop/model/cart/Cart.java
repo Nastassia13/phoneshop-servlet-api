@@ -18,6 +18,10 @@ public class Cart implements Serializable {
         return items;
     }
 
+    public void setItems(List<CartItem> items) {
+        this.items = items;
+    }
+
     public int getTotalQuantity() {
         return totalQuantity;
     }

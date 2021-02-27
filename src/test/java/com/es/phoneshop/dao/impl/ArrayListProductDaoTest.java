@@ -1,7 +1,7 @@
 package com.es.phoneshop.dao.impl;
 
 import com.es.phoneshop.exception.ArgumentIsNullException;
-import com.es.phoneshop.exception.ProductNotFoundException;
+import com.es.phoneshop.exception.NotFoundException;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.sort.SortField;
 import com.es.phoneshop.model.sort.SortOrder;
@@ -29,7 +29,7 @@ public class ArrayListProductDaoTest {
     private String query;
 
     @Before
-    public void setup() throws ProductNotFoundException {
+    public void setup() throws NotFoundException {
         productDao = ArrayListProductDao.getInstance();
         usd = Currency.getInstance("USD");
         id = 100L;
@@ -47,22 +47,22 @@ public class ArrayListProductDaoTest {
     }
 
     @Test
-    public void testGetProduct() throws ProductNotFoundException {
-        assertEquals(product1, productDao.getProduct(id));
+    public void testGetProduct() throws NotFoundException {
+        assertEquals(product1, productDao.getItem(id));
     }
 
-    @Test(expected = ProductNotFoundException.class)
-    public void testGetProductNotFound() throws ProductNotFoundException {
+    @Test(expected = NotFoundException.class)
+    public void testGetProductNotFound() throws NotFoundException {
         Long id = 0L;
-        productDao.getProduct(id);
-        fail("Expected ProductNotFoundException");
+        productDao.getItem(id);
+        fail("Expected NotFoundException");
     }
 
     @Test(expected = ArgumentIsNullException.class)
-    public void testGetProductNull() throws ProductNotFoundException {
+    public void testGetProductNull() throws NotFoundException {
         Long id = null;
-        assertEquals(product1, productDao.getProduct(id));
-        fail("Expected ProductNotFoundException");
+        assertEquals(product1, productDao.getItem(id));
+        fail("Expected ArgumentIsNullException");
     }
 
     @Test
@@ -130,52 +130,52 @@ public class ArrayListProductDaoTest {
     }
 
     @Test
-    public void testSaveProduct() throws ProductNotFoundException {
+    public void testSaveProduct() throws NotFoundException {
         Product product = new Product("test", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
         productDao.save(product);
         Long id = product.getId();
         assertNotNull(id);
-        assertEquals(product, productDao.getProduct(id));
+        assertEquals(product, productDao.getItem(id));
     }
 
     @Test
-    public void testSaveProductWithId() throws ProductNotFoundException {
+    public void testSaveProductWithId() throws NotFoundException {
         Long id = 102L;
         Product product = new Product(id, "test", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
         productDao.save(product);
-        assertEquals(product, productDao.getProduct(id));
+        assertEquals(product, productDao.getItem(id));
     }
 
     @Test
-    public void testSaveProductWithExistingId() throws ProductNotFoundException {
+    public void testSaveProductWithExistingId() throws NotFoundException {
         Product product = new Product(id, "test", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
         productDao.save(product);
-        assertEquals(product, productDao.getProduct(id));
+        assertEquals(product, productDao.getItem(id));
     }
 
     @Test(expected = ArgumentIsNullException.class)
-    public void testSaveProductNull() throws ProductNotFoundException {
+    public void testSaveProductNull() throws NotFoundException {
         Product product = null;
         productDao.save(product);
-        fail("Expected ProductNotFoundException");
+        fail("Expected ArgumentIsNullException");
     }
 
-    @Test(expected = ProductNotFoundException.class)
-    public void testDeleteProduct() throws ProductNotFoundException {
+    @Test(expected = NotFoundException.class)
+    public void testDeleteProduct() throws NotFoundException {
         productDao.delete(id);
-        productDao.getProduct(id);
-        fail("Expected ProductNotFoundException");
+        productDao.getItem(id);
+        fail("Expected NotFoundException");
     }
 
     @Test(expected = ArgumentIsNullException.class)
-    public void testDeleteProductNull() throws ProductNotFoundException {
+    public void testDeleteProductNull() throws NotFoundException {
         Long id = null;
         productDao.delete(id);
-        fail("Expected ProductNotFoundException");
+        fail("Expected ArgumentIsNullException");
     }
 
     @After
-    public void destroy() throws ProductNotFoundException {
+    public void destroy() throws NotFoundException {
         productDao.resetInstance();
     }
 }

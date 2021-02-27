@@ -2,10 +2,7 @@ package com.es.phoneshop.service.impl;
 
 import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.dao.impl.ArrayListProductDao;
-import com.es.phoneshop.exception.ArgumentIsNullException;
-import com.es.phoneshop.exception.OutOfQuantityException;
-import com.es.phoneshop.exception.OutOfStockException;
-import com.es.phoneshop.exception.ProductNotFoundException;
+import com.es.phoneshop.exception.*;
 import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.cart.CartItem;
 import com.es.phoneshop.model.product.Product;
@@ -65,7 +62,7 @@ public class HttpSessionCartServiceTest {
     }
 
     @Test(expected = ArgumentIsNullException.class)
-    public void testGetCartNullCartLoader() throws ProductNotFoundException {
+    public void testGetCartNullCartLoader() throws NotFoundException {
         cartLoader = null;
         assertEquals(cart, service.getCart(cartLoader));
         fail("Expected ArgumentIsNullException");

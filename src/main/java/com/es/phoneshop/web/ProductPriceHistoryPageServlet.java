@@ -1,9 +1,9 @@
 package com.es.phoneshop.web;
 
+import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.dao.impl.ArrayListProductDao;
 import com.es.phoneshop.model.product.PriceHistory;
 import com.es.phoneshop.model.product.Product;
-import com.es.phoneshop.dao.ProductDao;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -27,7 +27,7 @@ public class ProductPriceHistoryPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String productId = request.getPathInfo().substring(1);
-        Product product = productDao.getProduct(Long.valueOf(productId));
+        Product product = productDao.getItem(Long.valueOf(productId));
         request.setAttribute("product", product);
         List<PriceHistory> reverseHistory = new ArrayList<>(product.getHistory());
         Collections.reverse(reverseHistory);

@@ -5,7 +5,7 @@
 
 <tags:master pageTitle="Product not found">
   <h1>
-    Product with code ${pageContext.exception.getProductId()} not found
+    Sorry, your order is not found
   </h1>
   <tags:goToMainPage/>
 </tags:master>
