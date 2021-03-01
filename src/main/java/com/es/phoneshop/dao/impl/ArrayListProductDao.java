@@ -9,7 +9,7 @@ import com.es.phoneshop.model.sort.SortOrder;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ArrayListProductDao extends GenericDao<Product> implements ProductDao {
+public class ArrayListProductDao extends AbstractGenericDao<Product> implements ProductDao {
     private static ArrayListProductDao instance;
 
     private ArrayListProductDao() {

@@ -4,7 +4,6 @@ import com.es.phoneshop.exception.ArgumentIsNullException;
 import com.es.phoneshop.exception.NotFoundException;
 import com.es.phoneshop.exception.OrderNotFoundException;
 import com.es.phoneshop.model.order.Order;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,11 +40,15 @@ public class ArrayListOrderDaoTest {
         assertEquals(order1, orderDao.getItem(id));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testGetOrderNotFound() throws NotFoundException {
         Long id = 0L;
-        orderDao.getItem(id);
-        fail("Expected NotFoundException");
+        try {
+            orderDao.getItem(id);
+            fail("Expected NotFoundException");
+        } catch (NotFoundException e) {
+            assertEquals(Order.class.getSimpleName(), e.getClassName());
+        }
     }
 
     @Test(expected = ArgumentIsNullException.class)
@@ -105,10 +108,5 @@ public class ArrayListOrderDaoTest {
         String secureId = null;
         assertEquals(order1, orderDao.getOrderBySecureId(secureId));
         fail("Expected ArgumentIsNullException");
-    }
-
-    @After
-    public void destroy() throws NotFoundException {
-        //orderDao.resetInstance();
     }
 }

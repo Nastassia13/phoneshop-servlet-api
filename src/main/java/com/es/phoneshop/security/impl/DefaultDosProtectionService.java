@@ -25,11 +25,7 @@ public class DefaultDosProtectionService implements DosProtectionService {
 
     @Override
     public boolean isAllowed(String ip) {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - previousTime > TIME) {
-            countMap.clear();
-            previousTime = currentTime;
-        }
+        updateTime();
         Long count = countMap.get(ip);
         if (count == null) {
             count = 1L;
@@ -41,5 +37,13 @@ public class DefaultDosProtectionService implements DosProtectionService {
         }
         countMap.put(ip, count);
         return true;
+    }
+
+    private void updateTime() {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - previousTime > TIME) {
+            countMap.clear();
+            previousTime = currentTime;
+        }
     }
 }

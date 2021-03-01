@@ -1,6 +1,5 @@
-package com.es.phoneshop.web;
+package com.es.phoneshop.web.servlet;
 
-import com.es.phoneshop.exception.PastDateException;
 import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.order.Order;
 import com.es.phoneshop.model.order.PaymentMethod;
@@ -35,7 +34,7 @@ public class CheckoutPageServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Cart cart = cartService.getCart(new HttpSessionCartLoader(request));
         request.setAttribute("order", orderService.getOrder(cart));
         request.setAttribute("paymentMethods", PaymentMethod.values());
@@ -43,7 +42,7 @@ public class CheckoutPageServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Cart cart = cartService.getCart(new HttpSessionCartLoader(request));
         Order order = orderService.getOrder(cart);
         Map<String, String> errors = new HashMap<>();
@@ -75,7 +74,6 @@ public class CheckoutPageServlet extends HttpServlet {
         }
     }
 
-
     private void setPhone(HttpServletRequest request, Map<String, String> errors, Order order) {
         String value = request.getParameter("phone");
         if (value == null || value.isEmpty()) {
@@ -95,11 +93,12 @@ public class CheckoutPageServlet extends HttpServlet {
             try {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 LocalDate date = LocalDate.parse(value, formatter);
-                if (date.compareTo(LocalDate.now()) <= 0) {
-                    throw new PastDateException();
+                if (date.isBefore(LocalDate.now())) {
+                    errors.put("deliveryDate", "This date has already passed");
+                    return;
                 }
                 order.setDeliveryDate(date);
-            } catch (DateTimeParseException | PastDateException e) {
+            } catch (DateTimeParseException e) {
                 errors.put("deliveryDate", "Invalid value");
             }
         }

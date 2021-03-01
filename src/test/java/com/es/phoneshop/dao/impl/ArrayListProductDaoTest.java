@@ -51,11 +51,15 @@ public class ArrayListProductDaoTest {
         assertEquals(product1, productDao.getItem(id));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testGetProductNotFound() throws NotFoundException {
         Long id = 0L;
-        productDao.getItem(id);
-        fail("Expected NotFoundException");
+        try {
+            productDao.getItem(id);
+            fail("Expected NotFoundException");
+        } catch (NotFoundException e) {
+            assertEquals(Product.class.getSimpleName(), e.getClassName());
+        }
     }
 
     @Test(expected = ArgumentIsNullException.class)

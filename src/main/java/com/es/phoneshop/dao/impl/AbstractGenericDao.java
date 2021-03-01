@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class GenericDao<T extends Item> implements Dao<T> {
+public abstract class AbstractGenericDao<T extends Item> implements Dao<T> {
     protected Long maxId = 0L;
     protected List<T> items = new ArrayList<>();
     protected final Object lock = new Object();
@@ -29,24 +29,24 @@ public abstract class GenericDao<T extends Item> implements Dao<T> {
         }
     }
 
-    public void save(T o) {
-        if (o == null) {
+    public void save(T item) {
+        if (item == null) {
             throw new ArgumentIsNullException();
         }
         synchronized (lock) {
-            Long id = o.getId();
+            Long id = item.getId();
             if (id != null) {
                 Optional<T> current = items.stream()
                         .filter(p -> id.equals(p.getId()))
                         .findAny();
                 if (current.isPresent()) {
-                    items.set(items.indexOf(current.get()), o);
+                    items.set(items.indexOf(current.get()), item);
                 } else {
-                    items.add(o);
+                    items.add(item);
                 }
             } else {
-                o.setId(++maxId);
-                items.add(o);
+                item.setId(++maxId);
+                items.add(item);
             }
         }
     }

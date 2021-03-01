@@ -7,7 +7,7 @@ import com.es.phoneshop.model.order.Order;
 
 import java.util.ArrayList;
 
-public class ArrayListOrderDao extends GenericDao<Order> implements OrderDao {
+public class ArrayListOrderDao extends AbstractGenericDao<Order> implements OrderDao {
     private static ArrayListOrderDao instance;
 
     private ArrayListOrderDao() {

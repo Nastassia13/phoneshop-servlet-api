@@ -1,5 +1,6 @@
-package com.es.phoneshop.web;
+package com.es.phoneshop.web.servlet;
 
+import com.es.phoneshop.web.servlet.CartItemDeleteServlet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

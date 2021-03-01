@@ -1,4 +1,4 @@
-package com.es.phoneshop.web;
+package com.es.phoneshop.web.filter;
 
 import com.es.phoneshop.security.DosProtectionService;
 import com.es.phoneshop.security.impl.DefaultDosProtectionService;
@@ -9,6 +9,7 @@ import java.io.IOException;
 
 public class DosFilter implements Filter {
     private DosProtectionService dosProtectionService;
+    private int TOO_MANY_REQUESTS_CODE = 429;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -20,7 +21,7 @@ public class DosFilter implements Filter {
         if (dosProtectionService.isAllowed(request.getRemoteAddr())) {
             filterChain.doFilter(request, response);
         } else {
-            ((HttpServletResponse) response).setStatus(429);
+            ((HttpServletResponse) response).setStatus(TOO_MANY_REQUESTS_CODE);
         }
     }
 

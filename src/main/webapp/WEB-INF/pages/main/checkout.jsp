@@ -41,7 +41,6 @@
             </a>
           </td>
           <td class="quantity">
-            <fmt:formatNumber var="quantity" value="${item.quantity}"/>
             ${item.quantity}
             <input type="hidden" name="productId" value="${item.product.id}">
           </td>
@@ -52,36 +51,9 @@
           </td>
         </tr>
       </c:forEach>
-      <tr>
-        <td></td>
-        <td></td>
-        <td class="price">
-          Subtotal:
-        </td>
-        <td class="price">
-          <fmt:formatNumber value="${order.subtotal}" type="currency" currencySymbol="$"/>
-        </td>
-      </tr>
-      <tr>
-        <td></td>
-        <td></td>
-        <td class="price">
-          Delivery cost:
-        </td>
-        <td class="price">
-          <fmt:formatNumber value="${order.deliveryCost}" type="currency" currencySymbol="$"/>
-        </td>
-      </tr>
-      <tr>
-        <td></td>
-        <td></td>
-        <td class="price">
-          Total cost:
-        </td>
-        <td class="price">
-          <fmt:formatNumber value="${order.totalCost}" type="currency" currencySymbol="$"/>
-        </td>
-      </tr>
+      <tags:priceInTable label="Subtotal:" priceValue="${order.subtotal}"/>
+      <tags:priceInTable label="Delivery cost:" priceValue="${order.deliveryCost}"/>
+      <tags:priceInTable label="Total cost:" priceValue="${order.totalCost}"/>
     </table>
     <h2>Your details:</h2>
     <table>

@@ -1,4 +1,4 @@
-package com.es.phoneshop.web;
+package com.es.phoneshop.web.servlet;
 
 import com.es.phoneshop.dao.OrderDao;
 import com.es.phoneshop.dao.impl.ArrayListOrderDao;
@@ -20,7 +20,7 @@ public class OrderOverviewPageServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String secureOrderId = request.getPathInfo().substring(1);
         request.setAttribute("order", orderDao.getOrderBySecureId(secureOrderId));
         request.getRequestDispatcher("/WEB-INF/pages/main/orderOverview.jsp").forward(request, response);

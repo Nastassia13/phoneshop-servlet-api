@@ -1,4 +1,4 @@
-package com.es.phoneshop.web;
+package com.es.phoneshop.web.servlet;
 
 import com.es.phoneshop.dao.OrderDao;
 import com.es.phoneshop.dao.impl.ArrayListOrderDao;

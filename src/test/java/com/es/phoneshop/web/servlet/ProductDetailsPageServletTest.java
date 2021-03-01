@@ -1,14 +1,16 @@
-package com.es.phoneshop.web;
+package com.es.phoneshop.web.servlet;
 
 import com.es.phoneshop.dao.impl.ArrayListProductDao;
-import com.es.phoneshop.model.product.PriceHistory;
+import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.service.impl.HttpSessionCartService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.servlet.RequestDispatcher;
@@ -16,10 +18,9 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -28,7 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ProductPriceHistoryPageServletTest {
+public class ProductDetailsPageServletTest {
     @Mock
     private HttpServletRequest request;
     @Mock
@@ -36,30 +37,34 @@ public class ProductPriceHistoryPageServletTest {
     @Mock
     private RequestDispatcher requestDispatcher;
     @Mock
+    private HttpSession session;
+    @Mock
     private Product product;
     @Mock
-    private List<PriceHistory> priceHistory;
+    private Cart cart;
     @Mock
     private ArrayListProductDao productDao;
-    private Long productId;
+    private Long productId = 1L;
+    private String stringQuantity = "5";
     private ServletConfig config;
 
     @InjectMocks
-    private ProductPriceHistoryPageServlet servlet = new ProductPriceHistoryPageServlet();
+    private ProductDetailsPageServlet servlet = new ProductDetailsPageServlet();
 
-    public ProductPriceHistoryPageServletTest() {
+    public ProductDetailsPageServletTest() {
     }
 
     @Before
-    public void setup() throws ServletException {
-        productId = 1L;
+    public void setup() throws Exception {
+        MockitoAnnotations.initMocks(this);
         productDao = ArrayListProductDao.getInstance();
-        priceHistory = new ArrayList<>();
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
-        when(product.getId()).thenReturn(productId);
+        when(request.getSession()).thenReturn(session);
+        when(request.getSession().getAttribute(HttpSessionCartService.class.getName() + ".cart")).thenReturn(cart);
         when(request.getPathInfo()).thenReturn("/" + productId);
-        when(product.getHistory()).thenReturn(priceHistory);
-        product.appendPrice(new BigDecimal(500));
+        when(product.getId()).thenReturn(productId);
+        when(request.getLocale()).thenReturn(Locale.ENGLISH);
+        when(request.getParameter("quantity")).thenReturn(stringQuantity);
         productDao.save(product);
         servlet.init(config);
     }
@@ -70,7 +75,14 @@ public class ProductPriceHistoryPageServletTest {
 
         verify(requestDispatcher).forward(request, response);
         verify(request).setAttribute(eq("product"), eq(product));
-        verify(request).setAttribute(eq("history"), eq(priceHistory));
+    }
+
+    @Test
+    public void testDoPost() throws ServletException, IOException {
+        when(product.getStock()).thenReturn(15);
+        servlet.doPost(request, response);
+
+        verify(response).sendRedirect(request.getContextPath() + "/products/" + productId + "?message=Added to cart successfully");
     }
 
     @Test
@@ -80,14 +92,5 @@ public class ProductPriceHistoryPageServletTest {
 
         verify(request).setAttribute(eq("product"), argumentCaptor.capture());
         assertEquals(product, argumentCaptor.getValue());
-    }
-
-    @Test
-    public void testArgumentsHistory() throws ServletException, IOException {
-        ArgumentCaptor<ArrayList<PriceHistory>> argumentCaptor = ArgumentCaptor.forClass(ArrayList.class);
-        servlet.doGet(request, response);
-
-        verify(request).setAttribute(eq("history"), argumentCaptor.capture());
-        assertEquals(priceHistory, argumentCaptor.getValue());
     }
 }
