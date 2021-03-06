@@ -2,10 +2,7 @@ package com.es.phoneshop.service.impl;
 
 import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.dao.impl.ArrayListProductDao;
-import com.es.phoneshop.exception.ArgumentIsNullException;
-import com.es.phoneshop.exception.OutOfQuantityException;
-import com.es.phoneshop.exception.OutOfStockException;
-import com.es.phoneshop.exception.ProductNotFoundException;
+import com.es.phoneshop.exception.*;
 import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.cart.CartItem;
 import com.es.phoneshop.model.product.Product;
@@ -65,7 +62,7 @@ public class HttpSessionCartServiceTest {
     }
 
     @Test(expected = ArgumentIsNullException.class)
-    public void testGetCartNullCartLoader() throws ProductNotFoundException {
+    public void testGetCartNullCartLoader() throws NotFoundException {
         cartLoader = null;
         assertEquals(cart, service.getCart(cartLoader));
         fail("Expected ArgumentIsNullException");
@@ -193,12 +190,12 @@ public class HttpSessionCartServiceTest {
         assertEquals(quantity, cart.getItems().get(0).getQuantity());
     }
 
-    @Test(expected = OutOfQuantityException.class)
+    @Test
     public void testUpdateZero() throws OutOfQuantityException, OutOfStockException {
         Long productId = 1L;
         int quantity = 0;
         service.update(cart, productId, quantity);
-        assertEquals(quantity, cart.getItems().get(0).getQuantity());
+        assertFalse(cart.getItems().contains(item1));
     }
 
     @Test(expected = OutOfStockException.class)

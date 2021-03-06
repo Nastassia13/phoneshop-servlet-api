@@ -17,7 +17,7 @@ import java.util.Optional;
 public class HttpSessionCartService implements CartService {
     private static HttpSessionCartService instance;
     private ProductDao productDao;
-    private final Object obj = new Object();
+    private final Object cartLock = new Object();
 
     private HttpSessionCartService() {
         productDao = ArrayListProductDao.getInstance();
@@ -35,9 +35,7 @@ public class HttpSessionCartService implements CartService {
         if (cartLoader == null) {
             throw new ArgumentIsNullException();
         }
-        synchronized (CartLoader.class) {
-            return cartLoader.getCart();
-        }
+        return cartLoader.getCart();
     }
 
     @Override
@@ -45,29 +43,17 @@ public class HttpSessionCartService implements CartService {
         if (cart == null || productId == null) {
             throw new ArgumentIsNullException();
         }
-        synchronized (obj) {
-            Product product = productDao.getProduct(productId);
+        synchronized (cartLock) {
+            Product product = productDao.getItem(productId);
             Optional<CartItem> cartItem = findCartItem(cart, productId);
-            boolean isZero;
-            if (cartItem.isPresent()) {
-                CartItem item = cartItem.get();
-                int index = cart.getItems().indexOf(item);
-                int quantityInCart = cart.getItems().get(index).getQuantity();
-                isZero = checkStock(product, quantity, quantityInCart);
-                int resultQuantity = item.getQuantity() + quantity;
-                if (!isZero) {
-                    cart.getItems().get(index).setQuantity(resultQuantity);
-                } else {
-                    cart.getItems().remove(index);
-                }
-            } else {
-                isZero = checkStock(product, quantity, 0);
-                if (!isZero) {
-                    cart.getItems().add(new CartItem(product, quantity));
-                } else {
-                    throw new OutOfQuantityException();
-                }
-            }
+            int quantityInCart = cartItem.map(CartItem::getQuantity).orElse(0);
+            boolean isZero = checkStock(product, quantity, quantityInCart);
+            cartItem.ifPresentOrElse(item -> changeCart(cart, item, isZero, quantity + quantityInCart),
+                    () -> {
+                        if (!isZero) {
+                            cart.getItems().add(new CartItem(product, quantity));
+                        }
+                    });
             recalculateCart(cart);
         }
     }
@@ -77,18 +63,11 @@ public class HttpSessionCartService implements CartService {
         if (cart == null || productId == null) {
             throw new ArgumentIsNullException();
         }
-        synchronized (obj) {
-            Product product = productDao.getProduct(productId);
+        synchronized (cartLock) {
+            Product product = productDao.getItem(productId);
             Optional<CartItem> cartItem = findCartItem(cart, productId);
-            if (cartItem.isPresent()) {
-                int index = cart.getItems().indexOf(cartItem.get());
-                boolean isZero = checkStock(product, quantity, 0);
-                if (!isZero) {
-                    cart.getItems().get(index).setQuantity(quantity);
-                } else {
-                    throw new OutOfQuantityException();
-                }
-            }
+            boolean isZero = checkStock(product, quantity, 0);
+            cartItem.ifPresent(item -> changeCart(cart, item, isZero, quantity));
             recalculateCart(cart);
         }
     }
@@ -98,7 +77,7 @@ public class HttpSessionCartService implements CartService {
         if (cart == null || productId == null) {
             throw new ArgumentIsNullException();
         }
-        synchronized (obj) {
+        synchronized (cartLock) {
             cart.getItems().removeIf(item -> productId.equals(item.getProduct().getId()));
             recalculateCart(cart);
         }
@@ -127,5 +106,19 @@ public class HttpSessionCartService implements CartService {
             throw new OutOfQuantityException();
         }
         return quantity + quantityInCart == 0;
+    }
+
+    private void changeCart(Cart cart, CartItem item, boolean isZero, int quantity) {
+        if (!isZero) {
+            item.setQuantity(quantity);
+        } else {
+            cart.getItems().remove(item);
+        }
+    }
+
+    @Override
+    public void clearCart(Cart cart) {
+        cart.getItems().removeAll(cart.getItems());
+        recalculateCart(cart);
     }
 }

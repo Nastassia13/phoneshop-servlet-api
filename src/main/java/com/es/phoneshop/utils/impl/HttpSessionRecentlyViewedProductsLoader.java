@@ -13,6 +13,7 @@ public class HttpSessionRecentlyViewedProductsLoader implements RecentlyViewedPr
     private static final String VIEWED_SESSION_ATTRIBUTE = HttpSessionRecentlyViewedProductsService.class.getName() + ".viewed";
     private HttpServletRequest request;
     private HttpSession session;
+    private final Object loadLock = new Object();
 
     public HttpSessionRecentlyViewedProductsLoader(HttpServletRequest request) {
         this.request = request;
@@ -20,17 +21,22 @@ public class HttpSessionRecentlyViewedProductsLoader implements RecentlyViewedPr
 
     @Override
     public RecentlyViewedProducts getViewedProducts() {
-        session = request.getSession();
-        RecentlyViewedProducts viewedProducts = (RecentlyViewedProducts) session.getAttribute(VIEWED_SESSION_ATTRIBUTE);
-        if (viewedProducts == null) {
-            viewedProducts = new RecentlyViewedProducts();
-            session.setAttribute(VIEWED_SESSION_ATTRIBUTE, viewedProducts);
+        synchronized (loadLock) {
+            session = request.getSession();
+            RecentlyViewedProducts viewedProducts = (RecentlyViewedProducts) session.getAttribute(VIEWED_SESSION_ATTRIBUTE);
+            if (viewedProducts == null) {
+                viewedProducts = new RecentlyViewedProducts();
+                session.setAttribute(VIEWED_SESSION_ATTRIBUTE, viewedProducts);
+            }
+            return viewedProducts;
         }
-        return viewedProducts;
     }
 
     @Override
-    public void saveToRequest(List<Product> products) {
-        session.setAttribute("viewedProducts", products);
+    public void save(List<Product> products) {
+        synchronized (loadLock) {
+            session = request.getSession();
+            session.setAttribute("viewedProducts", products);
+        }
     }
 }

@@ -1,0 +1,88 @@
+package com.es.phoneshop.web.servlet;
+
+import com.es.phoneshop.model.cart.Cart;
+import com.es.phoneshop.service.impl.HttpSessionCartService;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public class MiniCarteServletTest {
+    @Mock
+    private HttpServletRequest request;
+    @Mock
+    private HttpServletResponse response;
+    @Mock
+    private RequestDispatcher requestDispatcher;
+    @Mock
+    private HttpSession session;
+    @Mock
+    private Cart cart;
+    private ServletConfig config;
+
+    @InjectMocks
+    private MiniCartServlet servlet = new MiniCartServlet();
+
+    public MiniCarteServletTest() {
+    }
+
+    @Before
+    public void setup() throws ServletException {
+        when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
+        when(request.getSession()).thenReturn(session);
+        when(request.getSession().getAttribute(HttpSessionCartService.class.getName() + ".cart")).thenReturn(cart);
+        servlet.init(config);
+    }
+
+    @Test
+    public void testDoGet() throws IOException, ServletException {
+        servlet.doGet(request, response);
+
+        verify(requestDispatcher).include(request, response);
+        verify(request).setAttribute(eq("cart"), eq(cart));
+    }
+
+    @Test
+    public void testArgumentsCartGet() throws ServletException, IOException {
+        ArgumentCaptor<Cart> argumentCaptor = ArgumentCaptor.forClass(Cart.class);
+        servlet.doGet(request, response);
+
+        verify(request).setAttribute(eq("cart"), argumentCaptor.capture());
+        assertEquals(cart, argumentCaptor.getValue());
+    }
+
+    @Test
+    public void testDoPost() throws IOException, ServletException {
+        servlet.doPost(request, response);
+
+        verify(requestDispatcher).include(request, response);
+        verify(request).setAttribute(eq("cart"), eq(cart));
+    }
+
+    @Test
+    public void testArgumentsCartPost() throws ServletException, IOException {
+        ArgumentCaptor<Cart> argumentCaptor = ArgumentCaptor.forClass(Cart.class);
+        servlet.doPost(request, response);
+
+        verify(request).setAttribute(eq("cart"), argumentCaptor.capture());
+        assertEquals(cart, argumentCaptor.getValue());
+    }
+}

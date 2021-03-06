@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface RecentlyViewedProductsLoader {
     RecentlyViewedProducts getViewedProducts();
-    void saveToRequest(List<Product> products);
+    void save(List<Product> products);
 }

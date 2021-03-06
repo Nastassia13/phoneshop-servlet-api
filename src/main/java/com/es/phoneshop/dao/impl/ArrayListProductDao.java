@@ -2,7 +2,6 @@ package com.es.phoneshop.dao.impl;
 
 import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.exception.ArgumentIsNullException;
-import com.es.phoneshop.exception.ProductNotFoundException;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.sort.SortField;
 import com.es.phoneshop.model.sort.SortOrder;
@@ -10,15 +9,10 @@ import com.es.phoneshop.model.sort.SortOrder;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ArrayListProductDao implements ProductDao {
+public class ArrayListProductDao extends AbstractGenericDao<Product> implements ProductDao {
     private static ArrayListProductDao instance;
-    private Long maxId;
-    private List<Product> products;
-    private final Object lock = new Object();
 
     private ArrayListProductDao() {
-        products = new ArrayList<>();
-        maxId = 0L;
     }
 
     public static synchronized ArrayListProductDao getInstance() {
@@ -26,19 +20,6 @@ public class ArrayListProductDao implements ProductDao {
             instance = new ArrayListProductDao();
         }
         return instance;
-    }
-
-    @Override
-    public Product getProduct(Long id) {
-        if (id == null) {
-            throw new ArgumentIsNullException();
-        }
-        synchronized (lock) {
-            return products.stream()
-                    .filter(product -> id.equals(product.getId()))
-                    .findAny()
-                    .orElseThrow(() -> new ProductNotFoundException(id));
-        }
     }
 
     private void calculateRating(Product product, String query, Map<Product, Double> rating) {
@@ -76,7 +57,7 @@ public class ArrayListProductDao implements ProductDao {
         synchronized (lock) {
             Map<Product, Double> rating = new HashMap<>();
             Comparator<Map.Entry<Product, Double>> comparator = defineComparator(query, sortField, sortOrder);
-            products.forEach(product -> calculateRating(product, query, rating));
+            items.forEach(product -> calculateRating(product, query, rating));
             return rating.entrySet().stream()
                     .filter(entry -> entry.getValue() != 0)
                     .filter(entry -> entry.getKey().getPrice() != null)
@@ -88,38 +69,15 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     @Override
-    public void save(Product product) {
-        if (product == null) {
-            throw new ArgumentIsNullException();
-        }
-        synchronized (lock) {
-            Long id = product.getId();
-            if (id != null) {
-                Optional<Product> current = products.stream()
-                        .filter(p -> id.equals(p.getId()))
-                        .findAny();
-                if (current.isPresent()) {
-                    products.set(products.indexOf(current.get()), product);
-                } else {
-                    products.add(product);
-                }
-            } else {
-                product.setId(++maxId);
-                products.add(product);
-            }
-        }
-    }
-
-    @Override
     public void delete(Long id) {
         if (id == null) {
             throw new ArgumentIsNullException();
         }
         synchronized (lock) {
-            products.stream()
+            items.stream()
                     .filter(p -> id.equals(p.getId()))
                     .findAny()
-                    .ifPresent(products::remove);
+                    .ifPresent(items::remove);
         }
     }
 
