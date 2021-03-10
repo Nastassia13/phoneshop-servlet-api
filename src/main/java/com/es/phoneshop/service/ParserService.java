@@ -24,14 +24,14 @@ public class ParserService {
         return Long.valueOf(productId);
     }
 
-    public int parseQuantity(String quantityString, HttpServletRequest request) throws ParseException, ParseToIntegerException {
-        int quantity;
+    public int parseNumber(String numberString, HttpServletRequest request) throws ParseException, ParseToIntegerException {
+        int number;
         NumberFormat format = NumberFormat.getInstance(request.getLocale());
-        Number parsed = format.parse(quantityString);
+        Number parsed = format.parse(numberString);
         if (parsed.doubleValue() - parsed.intValue() != 0) {
             throw new ParseToIntegerException();
         }
-        quantity = format.parse(quantityString).intValue();
-        return quantity;
+        number = format.parse(numberString).intValue();
+        return number;
     }
 }

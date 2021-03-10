@@ -37,7 +37,7 @@ public class ParserServiceTest {
     public void testParseQuantity() throws ParseException, ParseToIntegerException {
         when(request.getLocale()).thenReturn(Locale.ENGLISH);
         String quantityString = "12";
-        int quantity = parserService.parseQuantity(quantityString, request);
+        int quantity = parserService.parseNumber(quantityString, request);
         assertEquals(12, quantity);
     }
 
@@ -45,7 +45,7 @@ public class ParserServiceTest {
     public void testParseQuantityWithDot() throws ParseException, ParseToIntegerException {
         when(request.getLocale()).thenReturn(Locale.ENGLISH);
         String quantityString = "1.2";
-        int quantity = parserService.parseQuantity(quantityString, request);
+        int quantity = parserService.parseNumber(quantityString, request);
         fail("Expected ParseToIntegerException");
     }
 
@@ -53,7 +53,7 @@ public class ParserServiceTest {
     public void testParseQuantityWithComma() throws ParseException, ParseToIntegerException {
         when(request.getLocale()).thenReturn(Locale.ENGLISH);
         String quantityString = "1,2";
-        int quantity = parserService.parseQuantity(quantityString, request);
+        int quantity = parserService.parseNumber(quantityString, request);
         assertEquals(12, quantity);
     }
 
@@ -61,7 +61,7 @@ public class ParserServiceTest {
     public void testParseQuantityString() throws ParseException, ParseToIntegerException {
         when(request.getLocale()).thenReturn(Locale.ENGLISH);
         String quantityString = "asd";
-        int quantity = parserService.parseQuantity(quantityString, request);
+        int quantity = parserService.parseNumber(quantityString, request);
         fail("Expected ParseException");
     }
 
@@ -69,7 +69,7 @@ public class ParserServiceTest {
     public void testParseQuantityRu() throws ParseException, ParseToIntegerException {
         when(request.getLocale()).thenReturn(new Locale("ru"));
         String quantityString = "12";
-        int quantity = parserService.parseQuantity(quantityString, request);
+        int quantity = parserService.parseNumber(quantityString, request);
         assertEquals(12, quantity);
     }
 
@@ -77,7 +77,7 @@ public class ParserServiceTest {
     public void testParseQuantityWithDotRu() throws ParseException, ParseToIntegerException {
         when(request.getLocale()).thenReturn(new Locale("ru"));
         String quantityString = "1.2";
-        int quantity = parserService.parseQuantity(quantityString, request);
+        int quantity = parserService.parseNumber(quantityString, request);
         assertEquals(1, quantity);
     }
 
@@ -85,7 +85,7 @@ public class ParserServiceTest {
     public void testParseQuantityWithCommaRu() throws ParseException, ParseToIntegerException {
         when(request.getLocale()).thenReturn(new Locale("ru"));
         String quantityString = "1,2";
-        int quantity = parserService.parseQuantity(quantityString, request);
+        int quantity = parserService.parseNumber(quantityString, request);
         assertEquals(12, quantity);
         fail("Expected ParseToIntegerException");
     }
@@ -94,7 +94,7 @@ public class ParserServiceTest {
     public void testParseQuantityStringRu() throws ParseException, ParseToIntegerException {
         when(request.getLocale()).thenReturn(new Locale("ru"));
         String quantityString = "asd";
-        int quantity = parserService.parseQuantity(quantityString, request);
+        int quantity = parserService.parseNumber(quantityString, request);
         fail("Expected ParseException");
     }
 }

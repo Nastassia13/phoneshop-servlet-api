@@ -52,13 +52,13 @@ public class ProductDetailsPageServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         CartLoader cartLoader = new HttpSessionCartLoader(request);
         Cart cart = cartService.getCart(cartLoader);
         Long productId = parserService.parseProductId(request);
         String quantityString = request.getParameter("quantity");
         try {
-            int quantity = parserService.parseQuantity(quantityString, request);
+            int quantity = parserService.parseNumber(quantityString, request);
             cartService.add(cart, productId, quantity);
         } catch (OutOfStockException | OutOfQuantityException | ParseException | ParseToIntegerException e) {
             request.setAttribute("error", errorService.handleError(e));

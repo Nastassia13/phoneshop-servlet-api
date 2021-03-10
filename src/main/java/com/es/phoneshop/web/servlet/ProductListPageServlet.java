@@ -53,7 +53,7 @@ public class ProductListPageServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String[] productIds = request.getParameterValues("productId");
         String[] quantities = request.getParameterValues("quantity");
         Map<Long, String> errors = new HashMap<>();
@@ -63,7 +63,7 @@ public class ProductListPageServlet extends HttpServlet {
             if (request.getParameter("button" + productIds[i]) != null) {
                 Long productId = Long.valueOf(productIds[i]);
                 try {
-                    int quantity = parserService.parseQuantity(quantities[i], request);
+                    int quantity = parserService.parseNumber(quantities[i], request);
                     cartService.add(cart, productId, quantity);
                 } catch (ParseException | ParseToIntegerException | OutOfQuantityException | OutOfStockException e) {
                     errorService.handleErrors(errors, productId, e);

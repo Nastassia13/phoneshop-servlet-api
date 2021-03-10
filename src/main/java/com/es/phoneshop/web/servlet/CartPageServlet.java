@@ -49,7 +49,7 @@ public class CartPageServlet extends HttpServlet {
         for (int i = 0; i < productIds.length; i++) {
             Long productId = Long.valueOf(productIds[i]);
             try {
-                int quantity = parserService.parseQuantity(quantities[i], request);
+                int quantity = parserService.parseNumber(quantities[i], request);
                 cartService.update(cart, productId, quantity);
             } catch (ParseException | ParseToIntegerException | OutOfQuantityException | OutOfStockException e) {
                 errorService.handleErrors(errors, productId, e);
